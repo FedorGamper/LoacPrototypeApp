@@ -1,0 +1,34 @@
+{
+    "nativescript": {
+        "id": "org.nativescript.TestNativScript",
+        "tns-android": {
+            "version": "5.2.0"
+        },
+        "tns-ios": {
+            "version": "5.2.0"
+        }
+    },
+    "description": "NativeScript Application",
+    "license": "SEE LICENSE IN <your-license-filename>",
+    "repository": "<fill-your-repository-here>",
+    "dependencies": {
+        "@types/node": "^11.13.0",
+        "loacprotocol": "github:gianlucafrei/LOACProtocol",
+        "nativescript-bluetooth": "^1.3.1",
+        "nativescript-theme-core": "~1.0.4",
+        "nativescript-vue": "~2.0.0",
+        "tns-core-modules": "~5.2.0"
+    },
+    "devDependencies": {
+        "@babel/core": "~7.1.0",
+        "@babel/preset-env": "~7.1.0",
+        "babel-loader": "~8.0.0",
+        "nativescript-dev-typescript": "^0.8.0",
+        "nativescript-dev-webpack": "~0.20.0",
+        "nativescript-vue-template-compiler": "~2.0.0",
+        "node-sass": "~4.9.0",
+        "vue-loader": "~15.4.0"
+    },
+    "gitHead": "59b6da006346fedb5bb201fcc9cd7d204a69a82f",
+    "readme": "NativeScript Application"
+}
