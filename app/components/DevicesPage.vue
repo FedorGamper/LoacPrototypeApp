@@ -6,16 +6,17 @@
 
             <ListView for="d in devices" @itemTap="onItemTap">
                 <v-template>
-                    <GridLayout class="card"  rows="150, 60, 60" @tap="onDeviceTap(d)">
-                        <StackLayout row="0" col="0" class="imgContainer">
-                        </StackLayout>
+                    <GridLayout class="card"  rows="150, 40, 60" @tap="onDeviceTap(d)">
+                        
+                        <Image row="0" col="0" :src="d.imageUrl" stretch="aspectFill" />
+                        
 
                         <StackLayout row="1" col="0" class="titleContainer">
                             <Label class="h2 titleLbl" :text="d.name" horizontalAlignment="center" verticalAlignment="center"/>
                         </StackLayout>
 
                         <StackLayout row="2" col="0" class="detailContainer">
-                            <label class="detailLbl" text="12:00 - 17:00" horizontalAlignment="center" verticalAlignment="center"/>
+                            <label class="detailLbl" :text="d.description" horizontalAlignment="center" verticalAlignment="center"/>
                         </StackLayout>
                     </GridLayout>
                 </v-template>
@@ -75,11 +76,15 @@ export default {
 }
 
 ListView{
-    height: 100%;
+    background-color: $background-dark;
+    height: 80%;
 }
 
 .card{
 
+    background-color: $blue-10;
+    border-width: 2px;
+    border-color: $blue-10;
     border-radius: 40px;
     margin: 20px;
 }

@@ -6,6 +6,7 @@
             <label class="h1" :text="device.name" horizontalAlignment="center"/>
 
             <StackLayout class="imgContainer">
+                <Image :src="device.imageUrl" stretch="aspectFill" />
             </StackLayout>
 
             <StackLayout v-if="isSearching">
@@ -62,6 +63,11 @@ export default {
 }
 
 .imgContainer{
+
+    border-color: $blue-dark;
+    border-width: 4px;
+    border-style: solid;
+
     background-color: $blue-dark;
     width: 270px;
     height: 270px;
