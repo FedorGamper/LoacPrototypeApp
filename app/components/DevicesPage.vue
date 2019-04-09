@@ -2,20 +2,25 @@
     <Page class="page">
         <StackLayout >
             
-            <label class="title" text="Devices" />
+            <label class="h1" text="Devices" />
 
+            <ListView for="d in devices" @itemTap="onItemTap">
+                <v-template>
+                    <GridLayout class="card"  rows="150, 60, 60" @tap="onDeviceTap(d)">
+                        <StackLayout row="0" col="0" class="imgContainer">
+                        </StackLayout>
 
-            <Button text="Refresh" @tap="onButtonTap"/>
-            <StackLayout class="card" v-for="d in devices" v-bind:key="d.name" orientation="horizontal" @tap="onDeviceTap(d)" verticalAlignment="center">
+                        <StackLayout row="1" col="0" class="titleContainer">
+                            <Label class="h2 titleLbl" :text="d.name" horizontalAlignment="center" verticalAlignment="center"/>
+                        </StackLayout>
 
-                <StackLayout class="imgContainer">
-                </StackLayout>
+                        <StackLayout row="2" col="0" class="detailContainer">
+                            <label class="detailLbl" text="12:00 - 17:00" horizontalAlignment="center" verticalAlignment="center"/>
+                        </StackLayout>
+                    </GridLayout>
+                </v-template>
+            </ListView>
 
-                <StackLayout class="descContainer">
-                    <Label class="h2" :text="d.name" />"
-                </StackLayout>
-
-            </StackLayout>
         </StackLayout>
     </Page>
 </template>
@@ -65,15 +70,39 @@ export default {
 <style scoped lang="scss">
 @import '../app-variables';
 
-.imgContainer{
-    background-color: $blue-dark;
-    width: 100px;
-    height: 100px;
-    border-radius: 100px;
+.h1{
+    margin: 20px;
 }
 
-.descContainer{
-    margin-left: 20px;
+ListView{
+    height: 100%;
+}
+
+.card{
+
+    border-radius: 40px;
+    margin: 20px;
+}
+
+.imgContainer{
+    background-color: $blue-dark;
+}
+
+.titleContainer{
+
+    background-color: $blue-20;
+
+}
+
+.detailContainer{
+
+    background-color: $blue-10;
+}
+
+.detailLbl, .titleLbl{
+
+    margin: 10px;
+
 }
 
 </style>

@@ -1,12 +1,4 @@
-import { login } from "./controllers/LoginController";
-
-function resolveAfterHalfSecond() {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve('resolved');
-      }, 500);
-    });
-  }
+import {resolveAfter} from './prototypeUtils';
 
 export async function loadDevices(){
 
@@ -19,13 +11,13 @@ export async function loadDevices(){
         }
     ]
 
-    await resolveAfterHalfSecond();
+    await resolveAfter(500);
 
     return devices;
 };
 
 export async function sendLogin(req, password){
 
-    await resolveAfterHalfSecond();
+    await resolveAfter(500);
     return "cecece";
 }

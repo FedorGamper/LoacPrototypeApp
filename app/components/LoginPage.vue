@@ -3,7 +3,7 @@
     <Page class="page">
         <StackLayout class="form card" verticalAlignment="center">
 
-            <label class="title" text="Log In" />
+            <label class="h1" text="LOAC" horizontalAlignment="center"/>
 
             <StackLayout class="input-field">
                 <TextField v-model="username" class="input" hint="Username" keyboardType="email" autocorrect="false" autocapitalizationType="none"></TextField>
@@ -12,6 +12,8 @@
             <StackLayout class="input-field">
                 <TextField v-model="password" class="input" hint="Password" keyboardType="text" autocorrect="false" autocapitalizationType="none" secure="true"></TextField>
             </StackLayout>
+
+            <ActivityIndicator :busy="busy"></ActivityIndicator>
 
             <Button text="Log In" class="mainBtn" @tap="onLogInTap"></Button>
             <Label class="noAccountText" text="Don’t have an account?" horizontalAlignment="center"/>
@@ -29,16 +31,23 @@ export default {
     data() {
         return {
             username: "",
-            password: ""
+            password: "",
+            busy: false,
         };
     },
     methods: {
 
         async onLogInTap(){
 
+            this.busy = true;
+
             await login(this.username, this.password);
+            
+            this.busy = false;
             console.log("Login completed");
-             this.$navigateTo(DevicesPage)
+             this.$navigateTo(DevicesPage, {
+                 clearHistory: true
+             })
         }
     }
 };
@@ -61,7 +70,7 @@ Button{
 
 .input-field{
 
-    width: 100%;
+    width: 90%;
     
     margin: 20px;
     padding: 20px;
