@@ -4,6 +4,8 @@
             
             <label class="h1" text="Devices" />
 
+            <button text="Logout" @tap="onLogout"/>
+
             <ListView for="d in devices" @itemTap="onItemTap">
                 <v-template>
                     <GridLayout class="card"  rows="150, 40, 60" @tap="onDeviceTap(d)">
@@ -28,6 +30,9 @@
 <script>
 import {loadDevices} from '../apiBindings';
 import DeviceDetailPage from './DeviceDetailPage'
+import { logout } from '~/controllers/LoginController';
+import LoginPage from './LoginPage';
+
 
 export default {
     components: {
@@ -64,6 +69,16 @@ export default {
             }
 
             this.$navigateTo(DeviceDetailPage, options);
+        },
+        onLogout(){
+
+            var success = logout();
+            if(success)
+            {
+                this.$navigateTo(LoginPage, {
+                    clearHistory: true
+                });
+            }
         }
     }
 };

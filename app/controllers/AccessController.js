@@ -1,5 +1,8 @@
 import { resolveAfter } from '../prototypeUtils';
 import { connectToDevice, sendDataToDevice, scanDevices, disconnect } from '../bluetoothtest';
+import { loac } from '../loacBinding';
+
+const appSettings = require("application-settings");
 
 const UUIDS = {
     service: "4c6f6163-5072-6f74-6f63-6f6c53657230",
@@ -27,15 +30,6 @@ export async function searchAndConnect(device) {
             }
         });
     });
-
-
-   
-    /*return new Promise(resolve => {
-
-        connectToDevice(device.bluetoothAddress, () => {
-            resolve('resolved');
-        });
-    });*/
 }
 
 export async function disconnectDevice(device){
@@ -58,14 +52,36 @@ export async function access(device) {
 
     return new Promise(resolve => {
 
-        sendDataToDevice(
-            device.bluetoothAddress,
-            UUIDS.service,
-            UUIDS.accReq,
-            "0xde, 0xad, 0xbe, 0xff",
-            () => {
-            resolve('resolved');
-        });
+        try{
+
+            const secret = appSettings.getString("secret");
+            const certificate = appSettings.getString("certificate");
+            const username = appSettings.getString('username');
+
+            console.log("Secret: " + secret);
+
+
+            var subject = new loac.Subject(secret);
+            const token = device.loac.token;
+            var accessRequest = subject.createAccessRequest(username, 'open', [token], [certificate]);
+
+            var message = accessRequest.serialize();
+            console.log("Message: len= " + message.length + " : " + message.toString('hex'));
+
+            sendDataToDevice(
+                device.bluetoothAddress,
+                UUIDS.service,
+                UUIDS.accReq,
+                message,
+                () => {
+                resolve('resolved');
+            });
+        }
+        catch(err)
+        {
+            console.log("Error in access: " + err.message)
+        }
+        
     });
 
 }

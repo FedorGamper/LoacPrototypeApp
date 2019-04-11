@@ -18,6 +18,8 @@
             <Button text="Log In" class="mainBtn" @tap="onLogInTap"></Button>
             <Label class="noAccountText" text="Don’t have an account?" horizontalAlignment="center"/>
             
+            <label class="error" v-if="isFailed" text="Login Error" />
+
         </StackLayout>
     </Page>
 
@@ -25,29 +27,52 @@
 <script>
 
 import DevicesPage from './DevicesPage';
-import {login} from '../controllers/LoginController';
+import {login, isLogedIn} from '../controllers/LoginController';
 
 export default {
     data() {
         return {
-            username: "",
+            username: "user",
             password: "",
             busy: false,
+            isFailed: false
         };
     },
+    async mounted() {
+
+        let alreadyLogenId = await isLogedIn();
+        if(alreadyLogenId)
+        {
+            navigateToDevices(); 
+        }
+        
+    },
     methods: {
+
+        navigateToDevices(){
+
+            console.log("Login success");
+                this.$navigateTo(DevicesPage, {
+                    clearHistory: true
+                });
+        },
 
         async onLogInTap(){
 
             this.busy = true;
-
-            await login(this.username, this.password);
-            
+            let success = await login(this.username, this.password);
             this.busy = false;
-            console.log("Login completed");
-             this.$navigateTo(DevicesPage, {
-                 clearHistory: true
-             })
+
+
+            if(success)
+            {    
+                this.navigateToDevices();
+            }
+            else
+            {
+                console.log("Login error");
+                this.isFailed = true;
+            }
         }
     }
 };
