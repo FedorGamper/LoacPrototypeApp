@@ -9,16 +9,15 @@
                 <Image :src="device.imageUrl" stretch="aspectFill" />
             </StackLayout>
 
-            <StackLayout v-if="isSearching">
-                <Label text="Searching..." horizontalAlignment="center"/>
+            <StackLayout>
+                <Label v-if="isSearching" text="Searching..." horizontalAlignment="center"/>
                 <ActivityIndicator :busy="isSearching"></ActivityIndicator>
+                <button v-if="notFound" text="Search again" @tap="onSearchAgain"/>
             </StackLayout>
-            <StackLayout v-else>
-                <Label text="Connected" horizontalAlignment="center"/>
-            </StackLayout>
-
+                
             <StackLayout v-if="isConnected">
                 <ActivityIndicator :busy="isAccessing"></ActivityIndicator>
+                <Label v-if="isConnected" text="Connected" horizontalAlignment="center"/>
                 <Button class="mainBtn" @tap="onOpenTap">Open</Button>
             </StackLayout>
             
@@ -37,19 +36,16 @@ export default {
 
             isSearching: false,
             isConnected: false,
-            isAccessing: false
+            isAccessing: false,
+            notFound: false
         };
     },
     props: ['device'],
     async mounted(){
 
         console.log("Device detail component mounted: " + this.device.name);
-
-        this.isSearching = true;
-
-        await searchAndConnect(this.device);
-        this.isSearching = false;
-        this.isConnected = true;
+        await this.search();
+        
     },
     async destroyed(){
 
@@ -59,6 +55,26 @@ export default {
     },
     methods: {
         
+        async search(){
+
+            this.isSearching = true;
+            this.notFound = false;
+
+            let success = await searchAndConnect(this.device);
+
+            this.isSearching = false;
+
+            if(success)
+                this.isConnected = true;
+            else
+                this.notFound = true;
+        },
+
+        async onSearchAgain(){
+
+            await this.search();
+        },
+
         async onOpenTap(){
 
             this.isAccessing = true;

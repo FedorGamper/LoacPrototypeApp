@@ -15,7 +15,10 @@ export async function loadDevices(){
             name: "Raspberry",
             description: "Von Fedor",
             imageUrl: "https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F9%2F97%2FRaspberry_Pi_3_B%252B_%252839906369025%2529.png%2F1200px-Raspberry_Pi_3_B%252B_%252839906369025%2529.png&f=1",
-            bluetoothAddress: "76D06FB6-B95F-406B-5B40-2FF801EB3941",
+            
+            androidAddress: null,
+            iOsAddress: "76D06FB6-B95F-406B-5B40-2FF801EB3941",
+            
             loac:{
                 resourceName: "fedorspi",
                 token: pa.issueToken(mockUsername, true, "fedorspi", now-1000, now+1000)
@@ -25,7 +28,10 @@ export async function loadDevices(){
             name: "Raspberry",
             description: "Von Gian-Luca",
             imageUrl: "https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F9%2F97%2FRaspberry_Pi_3_B%252B_%252839906369025%2529.png%2F1200px-Raspberry_Pi_3_B%252B_%252839906369025%2529.png&f=1",
-            bluetoothAddress: "3E7F3A25-B739-6835-70AB-6312FE52D1E3",
+            
+            androidAddress: 'B8:27:EB:02:B9:4F',
+            iOsAddress: "3E7F3A25-B739-6835-70AB-6312FE52D1E3",
+
             loac:{
                 resourceName: "gianlucaspi",
                 token: pa.issueToken(mockUsername, true, "gianlucaspi", now-1000, now+1000)

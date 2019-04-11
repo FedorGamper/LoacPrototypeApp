@@ -1,6 +1,7 @@
 import { resolveAfter } from '../prototypeUtils';
 import { connectToDevice, sendDataToDevice, scanDevices, disconnect } from '../bluetoothtest';
 import { loac } from '../loacBinding';
+import { isAndroid } from '../utils';
 
 const appSettings = require("application-settings");
 
@@ -16,29 +17,45 @@ export async function searchAndConnect(device) {
 
     return new Promise(resolve =>{
 
-        scanDevices(UUIDS.service, peripheral=>{
-            
-            console.log("OnDiscoveredCallback peripheral.UUID=" + peripheral.UUID);
-            console.log("We are looking for " + device.bluetoothAddress);
+        let bluetoothAddress = isAndroid() ? device.androidAddress : device.iOsAddress;
+        let deviceFoundAndConnected = false;
 
-            if(peripheral.UUID == device.bluetoothAddress){
+        scanDevices(UUIDS.service,
+            // The discovered Callback
+            peripheral=>{
+            console.log("OnDiscoveredCallback peripheral.UUID=" + peripheral.UUID);
+
+            if(peripheral.UUID == bluetoothAddress){
+
                 console.log("We found the device with UUID = " + peripheral.UUID);
-                
+                console.log(peripheral);
+
                 connectToDevice(peripheral.UUID, () => {
-                    resolve('resolved');
+                    deviceFoundAndConnected = true;
+                    resolve(true);
                 });
             }
-        });
+            },
+            // The oncomplete callback
+            ()=>{
+
+                console.log("onCompleteCallback deviceFoundAndConnected=" + deviceFoundAndConnected);
+                if(! deviceFoundAndConnected)
+                    resolve(false);
+            }
+        );
     });
 }
 
 export async function disconnectDevice(device){
 
+    let bluetoothAddress = isAndroid() ? device.androidAddress : device.iOsAddress;
+
     console.log("disconnectDevice");
 
     return new Promise(resolve =>{
 
-        disconnect(device.bluetoothAddress, ()=>{
+        disconnect(bluetoothAddress, ()=>{
 
             resolve('resolved');
         });
@@ -48,7 +65,9 @@ export async function disconnectDevice(device){
 
 }
 
-export async function access(device) {
+export async function access(device) {    
+
+    let bluetoothAddress = isAndroid() ? device.androidAddress : device.iOsAddress;
 
     return new Promise(resolve => {
 
@@ -69,17 +88,18 @@ export async function access(device) {
             console.log("Message: len= " + message.length + " : " + message.toString('hex'));
 
             sendDataToDevice(
-                device.bluetoothAddress,
+                bluetoothAddress,
                 UUIDS.service,
                 UUIDS.accReq,
                 message,
-                () => {
-                resolve('resolved');
-            });
+                () => {resolve(true);},
+                () => {resolve(false);}
+            );
         }
         catch(err)
         {
             console.log("Error in access: " + err.message)
+            resolve(false);
         }
         
     });

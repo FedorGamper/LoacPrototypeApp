@@ -1,19 +1,26 @@
 var bluetooth = require("nativescript-bluetooth");
 
-export function scanDevices(serviceUUID, onDiscoveredCallback) {
+export function scanDevices(serviceUUID, onDiscoveredCallback, onCompleteCallback) {
 
     console.log("Start scanning for devices with service uuid=" + serviceUUID);
+
+    var discoveredPeripherals = [];
 
     bluetooth.startScanning({
         serviceUUIDs: [serviceUUID],
         seconds: 4,
         onDiscovered: function (peripheral) {
             console.log("Periperhal found with UUID: " + peripheral.UUID);
+            discoveredPeripherals.push(peripheral);
             onDiscoveredCallback(peripheral);
         },
         skipPermissionCheck: false,
     }).then(function () {
         console.log("scanning complete");
+
+        if(onCompleteCallback)
+            onCompleteCallback(discoveredPeripherals);
+
     }, function (err) {
         console.log("error while scanning: " + err);
     });
@@ -56,13 +63,14 @@ export function connectToDevice(uuid, successCallback){
 
 }
 
-export function sendDataToDevice(uuid, serviceUUID, characteristicUUID, message, successCallback){
+export function sendDataToDevice(uuid, serviceUUID, characteristicUUID, message, successCallback, errorCallback){
 
     console.log("Start sendDataToDevice ");
     console.log("Service UUID: " + serviceUUID);
     console.log("characteristicUUID: " + characteristicUUID);
-    console.log("peripheralUUID: " + uuid);
-    console.log("value: " + message);
+    console.log("peripheralUUID:  " + uuid);
+    console.log("message length:  " + message.length);
+    console.log("message content: " + message.toString('hex'));
 
     bluetooth.write({
         serviceUUID: serviceUUID,
@@ -76,7 +84,10 @@ export function sendDataToDevice(uuid, serviceUUID, characteristicUUID, message,
         }
     , function (err) {
         console.log("write error: " + err);
-        });
+
+        if(errorCallback)
+            errorCallback(err);
+    });
 }
 
 export function readDataFromDevice(uuid, readCallback){
