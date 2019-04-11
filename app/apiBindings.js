@@ -4,6 +4,7 @@ import { loac } from './loacBinding';
 // These are just some mock values
 var ia = new loac.IdentityAuthority(24*3600*7, "a0a38dd2164889c316c2ac5f15ac0511ea63b03902b83ff3");
 var pa = new loac.PermissionAuthority("0b010133adc585e9c9f43f59a8f05fa74cfd1961663757b1");
+var mockUsername = null;
 
 export async function loadDevices(){
 
@@ -17,7 +18,7 @@ export async function loadDevices(){
             bluetoothAddress: "76D06FB6-B95F-406B-5B40-2FF801EB3941",
             loac:{
                 resourceName: "fedorspi",
-                token: pa.issueToken('user', true, "fedorspi", now-1000, now+1000)
+                token: pa.issueToken(mockUsername, true, "fedorspi", now-1000, now+1000)
             }
         },
         {
@@ -27,7 +28,7 @@ export async function loadDevices(){
             bluetoothAddress: "3E7F3A25-B739-6835-70AB-6312FE52D1E3",
             loac:{
                 resourceName: "gianlucaspi",
-                token: pa.issueToken('user', true, "gianlucaspi", now-1000, now+1000)
+                token: pa.issueToken(mockUsername, true, "gianlucaspi", now-1000, now+1000)
             }
         },
         {
@@ -65,8 +66,10 @@ export async function sendLogin(req, username, password){
         console.log("Mock PA public: " + pa.pk);
         console.log("Mock IA public: " + ia.pk);
 
-        if(username != 'user')
+        if(password != 'pass')
             return false
+
+        mockUsername = username;
 
         var cert = ia.handleOnboaradingRequest(req, username);
 

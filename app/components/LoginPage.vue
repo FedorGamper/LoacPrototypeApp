@@ -32,8 +32,8 @@ import {login, isLogedIn} from '../controllers/LoginController';
 export default {
     data() {
         return {
-            username: "user",
-            password: "",
+            username: "Batman",
+            password: "pass",
             busy: false,
             isFailed: false
         };
