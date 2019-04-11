@@ -4,6 +4,16 @@ export async function loadDevices(){
 
     let devices = [
         {
+            name: "Raspberry",
+            description: "Von Fedor",
+            imageUrl: "https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F9%2F97%2FRaspberry_Pi_3_B%252B_%252839906369025%2529.png%2F1200px-Raspberry_Pi_3_B%252B_%252839906369025%2529.png&f=1",
+            bluetoothAddress: "76D06FB6-B95F-406B-5B40-2FF801EB3941",
+            loac:{
+                certificates: [],
+                tokens: ['deadbeef']
+            }
+        },
+        {
             name: "SuperCoffee 2000",
             description: "Very noisy",
             imageUrl: "https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Fimages-na.ssl-images-amazon.com%2Fimages%2FI%2F51fSE9-U2-L._AC_UL160_SR152%2C160_.jpg&f=1",

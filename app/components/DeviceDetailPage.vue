@@ -17,9 +17,9 @@
                 <Label text="Connected" horizontalAlignment="center"/>
             </StackLayout>
 
-            
             <StackLayout v-if="isConnected">
-                <Button class="mainBtn">Open</Button>
+                <ActivityIndicator :busy="isAccessing"></ActivityIndicator>
+                <Button class="mainBtn" @tap="onOpenTap">Open</Button>
             </StackLayout>
             
                     
@@ -28,7 +28,7 @@
     </Page>
 </template>
 <script>
-import {searchAndConnect} from '../controllers/AccessController';
+import {searchAndConnect, access, disconnectDevice} from '../controllers/AccessController';
 
 
 export default {
@@ -36,13 +36,14 @@ export default {
         return {
 
             isSearching: false,
-            isConnected: false
+            isConnected: false,
+            isAccessing: false
         };
     },
     props: ['device'],
     async mounted(){
 
-        console.log("Device detail mounted: " + this.device.name);
+        console.log("Device detail component mounted: " + this.device.name);
 
         this.isSearching = true;
 
@@ -50,8 +51,20 @@ export default {
         this.isSearching = false;
         this.isConnected = true;
     },
+    async destroyed(){
+
+        console.log("Device detail component destroyed");
+        disconnectDevice(this.device);
+
+    },
     methods: {
         
+        async onOpenTap(){
+
+            this.isAccessing = true;
+            await access(this.device);
+            this.isAccessing = false;
+        }
     }
 };
 </script>

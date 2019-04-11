@@ -1,10 +1,6 @@
 var bluetooth = require("nativescript-bluetooth");
 
-const serviceUUID = "ffffffff-ffff-ffff-ffff-fffffffffff0"
-const characteristicUUID = "ffffffff-ffff-ffff-ffff-fffffffffff1"
-//const peripheralUUID     = 'D30E361A-6052-FF91-5BB3-DA7631F1DFD8';
-
-export function scanDevices(onDiscoveredCallback) {
+export function scanDevices(serviceUUID, onDiscoveredCallback) {
 
     console.log("Start scanning for devices with service uuid=" + serviceUUID);
 
@@ -25,9 +21,23 @@ export function scanDevices(onDiscoveredCallback) {
 
 }
 
+export function disconnect(uuid, onDisconnected){
+    
+    console.log("Start disconnecting from " + uuid);
+    bluetooth.disconnect({
+        UUID: uuid
+      }).then(function() {
+        console.log("disconnected successfully");
+        onDisconnected();
+      }, function (err) {
+        // in this case you're probably best off treating this as a disconnected peripheral though
+        console.log("disconnection error: " + err);
+      });
+}
+
 export function connectToDevice(uuid, successCallback){
 
-    console.log("Start connecting")
+    console.log("Start connecting to " + uuid)
 
     bluetooth.connect({
 
@@ -46,9 +56,13 @@ export function connectToDevice(uuid, successCallback){
 
 }
 
-export function sendDataToDevice(uuid, message){
+export function sendDataToDevice(uuid, serviceUUID, characteristicUUID, message, successCallback){
 
-    console.log("Start send data to device");
+    console.log("Start sendDataToDevice ");
+    console.log("Service UUID: " + serviceUUID);
+    console.log("characteristicUUID: " + characteristicUUID);
+    console.log("peripheralUUID: " + uuid);
+    console.log("value: " + message);
 
     bluetooth.write({
         serviceUUID: serviceUUID,
@@ -58,6 +72,7 @@ export function sendDataToDevice(uuid, message){
     }).then(
         () => {
             console.log("WRITTEN:" + message);
+            successCallback();
         }
     , function (err) {
         console.log("write error: " + err);
