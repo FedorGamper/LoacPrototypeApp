@@ -10,51 +10,51 @@ export async function loadDevices(){
 
     let now = loac.utils.dateToUnixTime(new Date());
     
+    var token = pa.issueToken(mockUsername, true, "fedorspi", now-1000, now+1000);
+
     let devices = [
         {
-            name: "Raspberry",
+            name: "Fedors's Raspberry",
             description: "Von Fedor",
             imageUrl: "https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F9%2F97%2FRaspberry_Pi_3_B%252B_%252839906369025%2529.png%2F1200px-Raspberry_Pi_3_B%252B_%252839906369025%2529.png&f=1",
             
-            androidAddress: null,
-            iOsAddress: "76D06FB6-B95F-406B-5B40-2FF801EB3941",
-            
+            delegatedBy: null,
+
+            buttons: [
+                {
+                    "text": "Small Coffee",
+                    "command": "brew small coffee"
+                },
+                {
+                    "text": "Large Coffee",
+                    "command": "brew large coffee"
+                }
+            ],
+
             loac:{
                 resourceName: "fedorspi",
-                token: pa.issueToken(mockUsername, true, "fedorspi", now-1000, now+1000)
+                tokens: [token],
+                certificates: []
             }
         },
         {
-            name: "Raspberry",
+            name: "Gian-Lucas's Raspberry",
             description: "Von Gian-Luca",
             imageUrl: "https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F9%2F97%2FRaspberry_Pi_3_B%252B_%252839906369025%2529.png%2F1200px-Raspberry_Pi_3_B%252B_%252839906369025%2529.png&f=1",
             
-            androidAddress: 'B8:27:EB:02:B9:4F',
-            iOsAddress: "3E7F3A25-B739-6835-70AB-6312FE52D1E3",
+            delegatedBy: null,
+
+            buttons: [
+                {
+                    "btnTxt": "Brew Coffee",
+                    "command": "brew"
+                }
+            ],
 
             loac:{
                 resourceName: "gianlucaspi",
-                token: pa.issueToken(mockUsername, true, "gianlucaspi", now-1000, now+1000)
-            }
-        },
-        {
-            name: "SuperCoffee 2000",
-            description: "Very noisy",
-            imageUrl: "https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Fimages-na.ssl-images-amazon.com%2Fimages%2FI%2F51fSE9-U2-L._AC_UL160_SR152%2C160_.jpg&f=1",
-            bluetoothAddress: "foobar",
-            loac:{
-                certificates: [],
-                tokens: ['deadbeef']
-            }
-        },
-        {
-            name: "Espresso Maker",
-            description: "Makes the best espresso",
-            imageUrl: "https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Ftse4.mm.bing.net%2Fth%3Fid%3DOIP.hyJ1NSgu7H0RiLeu8hVt_AAAAA%26amp%3Bpid%3DApi&f=1",
-            bluetoothAddress: "barfoo",
-            loac:{
-                certificates: ['aabbee'],
-                tokens: ['001122', 'deadbeef']
+                tokens: [pa.issueToken(mockUsername, true, "gianlucaspi", now-1000, now+1000)],
+                certificates: []
             }
         }
     ]

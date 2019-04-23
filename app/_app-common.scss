@@ -17,3 +17,19 @@
    color: #FFFFFF;
    background-color: $accent-light;
 }
+
+.form{
+   vertical-align: middle;
+}
+
+.input-field{
+
+   width: 90%;
+   
+   margin: 20px;
+   padding: 20px;
+   /*font-size: 30px;*/
+
+   border-width: 1px;
+   border-color: $blue-10;
+}

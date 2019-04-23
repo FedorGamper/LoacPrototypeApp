@@ -1,9 +1,13 @@
 <template>
     <Page class="page">
 
-        <StackLayout>
+        <ActionBar :title="device.name">
+            <ActionItem @tap="onTapShare"
+                ios.systemIcon="9" ios.position="right"
+                android.systemIcon="ic_menu_share" android.position="actionBar" />
+        </ActionBar>
 
-            <label class="h1" :text="device.name" horizontalAlignment="center"/>
+        <StackLayout>
 
             <StackLayout class="imgContainer">
                 <Image :src="device.imageUrl" stretch="aspectFill" />
@@ -18,7 +22,11 @@
             <StackLayout v-if="isConnected">
                 <ActivityIndicator :busy="isAccessing"></ActivityIndicator>
                 <Label v-if="isConnected" text="Connected" horizontalAlignment="center"/>
-                <Button class="mainBtn" @tap="onOpenTap">Open</Button>
+
+                <StackLayout v-for="btn in device.buttons" v-bind:key="btn.command">
+                    <Button :text="btn.text" class="mainBtn" @tap="onOpenTap(btn.command)"/>
+                </StackLayout>
+
             </StackLayout>
             
                     
@@ -28,6 +36,7 @@
 </template>
 <script>
 import {searchAndConnect, access, disconnectDevice} from '../controllers/AccessController';
+import DelegatePageVue from './DelegatePage.vue';
 
 
 export default {
@@ -37,7 +46,8 @@ export default {
             isSearching: false,
             isConnected: false,
             isAccessing: false,
-            notFound: false
+            notFound: false,
+            deviceUuid: "null"
         };
     },
     props: ['device'],
@@ -50,7 +60,7 @@ export default {
     async destroyed(){
 
         console.log("Device detail component destroyed");
-        disconnectDevice(this.device);
+        disconnectDevice(this.deviceUuid);
 
     },
     methods: {
@@ -60,14 +70,19 @@ export default {
             this.isSearching = true;
             this.notFound = false;
 
-            let success = await searchAndConnect(this.device);
+            let result = await searchAndConnect(this.device);
 
             this.isSearching = false;
-
-            if(success)
+            console.log(result);
+            if(result.success)
+            {
                 this.isConnected = true;
+                this.deviceUuid = result.uuid;
+            }   
             else
+            {
                 this.notFound = true;
+            }
         },
 
         async onSearchAgain(){
@@ -75,11 +90,23 @@ export default {
             await this.search();
         },
 
-        async onOpenTap(){
+        async onOpenTap(command){
 
             this.isAccessing = true;
-            await access(this.device);
+            await access(this.device, this.deviceUuid, command);
             this.isAccessing = false;
+        },
+
+        async onTapShare(){
+
+            var options = {
+                props: {
+                    device: this.device,
+                }
+            }
+
+            this.$navigateTo(DelegatePageVue, options);
+
         }
     }
 };
@@ -104,6 +131,10 @@ export default {
 
     margin-top: 40px;
     margin-bottom: 100px;
+}
+
+Button{
+    margin-bottom: 20px;
 }
 
 </style>

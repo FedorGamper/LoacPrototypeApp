@@ -6,8 +6,10 @@ export function scanDevices(serviceUUID, onDiscoveredCallback, onCompleteCallbac
 
     var discoveredPeripherals = [];
 
+    var serviceUUIDs = serviceUUID == null ? [] : [serviceUUID]
+
     bluetooth.startScanning({
-        serviceUUIDs: [serviceUUID],
+        serviceUUIDs: serviceUUIDs,
         seconds: 4,
         onDiscovered: function (peripheral) {
             console.log("Periperhal found with UUID: " + peripheral.UUID);
@@ -69,7 +71,10 @@ export function sendDataToDevice(uuid, serviceUUID, characteristicUUID, message,
     console.log("Service UUID: " + serviceUUID);
     console.log("characteristicUUID: " + characteristicUUID);
     console.log("peripheralUUID:  " + uuid);
-    console.log("message length:  " + message.length);
+    console.log("message length without padding:  " + message.length);
+
+    message = Buffer.concat([message, Buffer.from('ff', 'hex')]);
+
     console.log("message content: " + message.toString('hex'));
 
     bluetooth.write({

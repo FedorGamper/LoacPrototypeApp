@@ -89,22 +89,6 @@ Button{
     margin-top: 60px;
 }
 
-.form{
-    vertical-align: middle;
-}
-
-.input-field{
-
-    width: 90%;
-    
-    margin: 20px;
-    padding: 20px;
-    font-size: 40px;
-
-    border-width: 1px;
-    border-color: $blue-10;
-}
-
 .noAccountText{
     margin: 10px;
     color: $blue-50;

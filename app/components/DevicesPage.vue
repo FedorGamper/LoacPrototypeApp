@@ -1,28 +1,43 @@
 <template>
     <Page class="page">
+
+        <ActionBar title="Devices">
+                <ActionItem @tap="onTapAdd"
+                ios.systemIcon="4" ios.position="right"
+                android.systemIcon="ic_menu_add" android.position="actionBar" />
+        </ActionBar>
+
         <StackLayout >
-            
-            <label class="h1" text="Devices" />
 
             <button text="Logout" @tap="onLogout"/>
 
-            <ListView for="d in devices" @itemTap="onItemTap">
-                <v-template>
-                    <GridLayout class="card"  rows="150, 40, 60" @tap="onDeviceTap(d)">
-                        
-                        <Image row="0" col="0" :src="d.imageUrl" stretch="aspectFill" />
-                        
+            <PullToRefresh @refresh="refreshList">
+                <ListView for="d in devices">
+                    <v-template>
+                        <GridLayout class="card"  rows="150, 40, 60" @tap="onDeviceTap(d)">
+                            
+                            <Image row="0" col="0" :src="d.imageUrl" stretch="aspectFill" />
+                            
 
-                        <StackLayout row="1" col="0" class="titleContainer">
-                            <Label class="h2 titleLbl" :text="d.name" horizontalAlignment="center" verticalAlignment="center"/>
-                        </StackLayout>
+                            <StackLayout row="1" col="0" class="titleContainer">
+                                <Label class="h2 titleLbl" :text="d.name" horizontalAlignment="center" verticalAlignment="center"/>
+                            </StackLayout>
 
-                        <StackLayout row="2" col="0" class="detailContainer">
-                            <label class="detailLbl" :text="d.description" horizontalAlignment="center" verticalAlignment="center"/>
-                        </StackLayout>
-                    </GridLayout>
-                </v-template>
-            </ListView>
+                            <StackLayout row="2" col="0" class="detailContainer">
+                                
+                                <Label v-if="d.delegatedBy != null" horizontalAlignment="center">
+                                    <FormattedString>
+                                        <Span text="Delegated by " ></Span>
+                                        <Span :text="d.delegatedBy" fontAttributes="Bold"></Span>
+                                    </FormattedString>
+                                </Label>
+
+                                <Label class="detailLbl" :text="d.description" horizontalAlignment="center" verticalAlignment="center"/>
+                            </StackLayout>
+                        </GridLayout>
+                    </v-template>
+                </ListView>
+            </PullToRefresh>
 
         </StackLayout>
     </Page>
@@ -32,7 +47,10 @@ import {loadDevices} from '../apiBindings';
 import DeviceDetailPage from './DeviceDetailPage'
 import { logout } from '~/controllers/LoginController';
 import LoginPage from './LoginPage';
+import { unpackReceivedAccessRights } from '~/controllers/DelegationController';
+import { logUncatched } from '~/utils';
 
+var dialogs = require("tns-core-modules/ui/dialogs");
 
 export default {
     components: {
@@ -49,13 +67,52 @@ export default {
     methods: {
         async onButtonTap() {
 
-            this.devices = [];
+            await this.updateList();
+            
+        },
+        async refreshList(args) {
 
-            console.log("Start loading devices");
+            var pullRefresh = args.object;
+            
+            await this.updateList();
+            pullRefresh.refreshing = false;
+        },
+        async updateList(){
+
             let devices = await loadDevices();
-            console.log(devices.length +  " devices loaded.");
-
             this.devices = devices;
+        },
+        async onTapAdd(){
+
+            const t = this;
+
+            dialogs.prompt("Enter token", "").then(async function (r) {
+
+                try{
+
+                        if(r.result){
+                        var result = await unpackReceivedAccessRights(r.text);
+                        
+                        console.log(result);
+                        
+                        if(result.success)
+                        {
+                            t.devices = t.devices.concat([result.device]);
+                            console.log("Updated devices list with " + t.devices.length + " devices");
+                        }
+                        else{
+                            
+                            dialogs.alert(result.message).then(function() {
+                                console.log("Dialog closed!");
+                            });
+                        }
+                    }
+                }
+                catch(err)
+                {
+                    logUncatched(err);
+                }
+            });
         },
         onDeviceTap(device){
 
@@ -92,13 +149,13 @@ export default {
 
 ListView{
     background-color: $background-dark;
-    height: 80%;
+    height: 100%;
 }
 
 .card{
 
     background-color: $blue-10;
-    border-width: 2px;
+    border-width: 4px;
     border-color: $blue-10;
     border-radius: 40px;
     margin: 20px;
@@ -110,13 +167,13 @@ ListView{
 
 .titleContainer{
 
-    background-color: $blue-20;
+    background-color: $background-dark;
 
 }
 
 .detailContainer{
 
-    background-color: $blue-10;
+    background-color: $background-light;
 }
 
 .detailLbl, .titleLbl{

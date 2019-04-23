@@ -1,4 +1,3 @@
-import { resolveAfter } from '../prototypeUtils';
 import { connectToDevice, sendDataToDevice, scanDevices, disconnect } from '../bluetoothtest';
 import { loac } from '../loacBinding';
 import { isAndroid } from '../utils';
@@ -7,101 +6,137 @@ const appSettings = require("application-settings");
 
 const UUIDS = {
     service: "4c6f6163-5072-6f74-6f63-6f6c53657230",
-    accReq:  "4c6f6163-5072-6f74-6f63-6f6c43686130",
-    time:    "4c6f6163-5072-6f74-6f63-6f6c43686131",
-    name:    "4c6f6163-5072-6f74-6f63-6f6c43686132",
-    state:   "4c6f6163-5072-6f74-6f63-6f6c43686133"
+    accReq: "4c6f6163-5072-6f74-6f63-6f6c43686130",
+    time: "4c6f6163-5072-6f74-6f63-6f6c43686131",
+    name: "4c6f6163-5072-6f74-6f63-6f6c43686132",
+    state: "4c6f6163-5072-6f74-6f63-6f6c43686133"
+}
+
+export async function searchAviableDevices() {
+
+    return new Promise(resolve => {
+
+
+        try {
+
+
+            scanDevices(null,
+                // The discovered Callback
+                peripheral => {
+
+                    
+                    /*
+                    { "UUID": "5DD19D5C-ADD3-BA55-ADAC-CA07ADA757A9", "name": "[TV] Samsung 6 Series (43)", "RSSI": -93, "state": "disconnected", "manufacturerId": 117, "manufacturerData": { } }
+                    */
+                    console.log("Device found with name: " + peripheral.name);
+
+                },
+                // The oncomplete callback
+                () => {
+
+                    resolve(true);
+                }
+            );
+        }
+        catch (err) {
+            console.log("Uncatched errro: " + err.message);
+            resolve(false)
+        }
+
+    });
+
 }
 
 export async function searchAndConnect(device) {
 
-    return new Promise(resolve =>{
+    return new Promise(resolve => {
 
-        let bluetoothAddress = isAndroid() ? device.androidAddress : device.iOsAddress;
         let deviceFoundAndConnected = false;
 
         scanDevices(UUIDS.service,
             // The discovered Callback
-            peripheral=>{
-            console.log("OnDiscoveredCallback peripheral.UUID=" + peripheral.UUID);
+            peripheral => {
+                console.log("discovered device name=" + peripheral.name);
 
-            if(peripheral.UUID == bluetoothAddress){
+                if (peripheral.name = device.loac.resourceName) {
 
-                console.log("We found the device with UUID = " + peripheral.UUID);
-                console.log(peripheral);
+                    console.log("We found the device with name= " + peripheral.name +" the uuid is: " + peripheral.UUID);
+                    console.log(peripheral);
 
-                connectToDevice(peripheral.UUID, () => {
-                    deviceFoundAndConnected = true;
-                    resolve(true);
-                });
-            }
+                    connectToDevice(peripheral.UUID, () => {
+                        deviceFoundAndConnected = true;
+
+                        resolve({
+                            success: true,
+                            uuid: peripheral.UUID
+                        });
+                    });
+                }
             },
             // The oncomplete callback
-            ()=>{
+            () => {
 
                 console.log("onCompleteCallback deviceFoundAndConnected=" + deviceFoundAndConnected);
-                if(! deviceFoundAndConnected)
-                    resolve(false);
+                if (!deviceFoundAndConnected)
+                    resolve({
+                        success: false
+                    });
             }
         );
     });
 }
 
-export async function disconnectDevice(device){
+export async function disconnectDevice(uuid) {
 
-    let bluetoothAddress = isAndroid() ? device.androidAddress : device.iOsAddress;
+    return new Promise(resolve => {
 
-    console.log("disconnectDevice");
-
-    return new Promise(resolve =>{
-
-        disconnect(bluetoothAddress, ()=>{
+        disconnect(uuid, () => {
 
             resolve('resolved');
         });
     });
 
-   
+
 
 }
 
-export async function access(device) {    
-
-    let bluetoothAddress = isAndroid() ? device.androidAddress : device.iOsAddress;
+export async function access(device, deviceUuid, command) {
 
     return new Promise(resolve => {
 
-        try{
+        try {
 
             const secret = appSettings.getString("secret");
             const certificate = appSettings.getString("certificate");
-            const username = appSettings.getString('username');
 
             console.log("Secret: " + secret);
-
-
+            
             var subject = new loac.Subject(secret);
-            const token = device.loac.token;
-            var accessRequest = subject.createAccessRequest(username, 'open', [token], [certificate]);
+
+            const certificates = device.loac.certificates.concat(certificate);
+            const tokens = device.loac.tokens;
+            var accessRequest = subject.createAccessRequest(device.loac.resourceName, command, tokens, certificates);
+
+            console.log("Created access request: "+ JSON.stringify(accessRequest));
 
             var message = accessRequest.serialize();
-            console.log("Message: len= " + message.length + " : " + message.toString('hex'));
+            console.log("Message: len= " + message.length + " : " + message.toString('hex'));
+            
 
             sendDataToDevice(
-                bluetoothAddress,
+                deviceUuid,
                 UUIDS.service,
                 UUIDS.accReq,
                 message,
-                () => {resolve(true);},
-                () => {resolve(false);}
+                () => { resolve(true); },
+                () => { resolve(false); }
             );
         }
-        catch(err)
-        {
+        catch (err) {
             console.log("Error in access: " + err.message)
             resolve(false);
         }
-        
+
     });
 
 }
