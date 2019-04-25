@@ -45,7 +45,7 @@
 <script>
 import {loadDevices} from '../apiBindings';
 import DeviceDetailPage from './DeviceDetailPage'
-import { logout } from '~/controllers/LoginController';
+import { logout, loadDevicesFromServer } from '~/controllers/LoginController';
 import LoginPage from './LoginPage';
 import { unpackReceivedAccessRights } from '~/controllers/DelegationController';
 import { logUncatched } from '~/utils';
@@ -79,7 +79,7 @@ export default {
         },
         async updateList(){
 
-            let devices = await loadDevices();
+            let devices = await loadDevicesFromServer();
             this.devices = devices;
         },
         async onTapAdd(){

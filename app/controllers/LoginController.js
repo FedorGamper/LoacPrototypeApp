@@ -1,5 +1,5 @@
 import {loac} from '../loacBinding';
-import {sendLogin} from '../apiBindings';
+import {sendLogin, loadDevices} from '../apiBindings';
 
 const appSettings = require("application-settings");
 
@@ -41,11 +41,25 @@ export async function login(username, password){
         appSettings.setString("secret", subject.sk);
         appSettings.setString("certificate", certificate);
         appSettings.setString("username", username);
+        appSettings.setString("password", password);
 
         return true;
     }
 
     return false;
+}
+
+export async function loadDevicesFromServer(){
+
+    var username = appSettings.getString('username');
+    var password = appSettings.getString('password');
+
+    var result = loadDevices(username, password);
+
+    console.log("Devices loaded:");
+    console.log(result);
+
+    return result;
 }
 
 export async function logout(){

@@ -121,7 +121,6 @@ export async function access(device, deviceUuid, command) {
 
             var message = accessRequest.serialize();
             console.log("Message: len= " + message.length + " : " + message.toString('hex'));
-            
 
             sendDataToDevice(
                 deviceUuid,

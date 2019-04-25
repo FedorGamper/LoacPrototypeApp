@@ -1,91 +1,65 @@
-import {resolveAfter} from './prototypeUtils';
+import { resolveAfter } from './prototypeUtils';
 import { loac } from './loacBinding';
+import { resolve } from 'url';
+import { logUncatched } from './utils';
 
-// These are just some mock values
-var ia = new loac.IdentityAuthority(24*3600*7, "a0a38dd2164889c316c2ac5f15ac0511ea63b03902b83ff3");
-var pa = new loac.PermissionAuthority("0b010133adc585e9c9f43f59a8f05fa74cfd1961663757b1");
-var mockUsername = null;
+const baseUrl = 'http://192.168.1.151:5000/api';
+const httpModule = require("http");
 
-export async function loadDevices(){
+async function request(method, endpoint, content, username, password)
+{
+    return new Promise((resolve, reject)=>{
 
-    let now = loac.utils.dateToUnixTime(new Date());
-    
-    var token = pa.issueToken(mockUsername, true, "fedorspi", now-1000, now+1000);
+        var url = baseUrl + endpoint;
+        console.log(method + ": " + url);
 
-    let devices = [
-        {
-            name: "Fedors's Raspberry",
-            description: "Von Fedor",
-            imageUrl: "https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F9%2F97%2FRaspberry_Pi_3_B%252B_%252839906369025%2529.png%2F1200px-Raspberry_Pi_3_B%252B_%252839906369025%2529.png&f=1",
-            
-            delegatedBy: null,
+        var authHeader = "Basic " + btoa(username + ":" + password)
 
-            buttons: [
+        httpModule.request({
+            url: url,
+            method: method,
+            headers: { "Content-Type": "application/json" ,
+                       "Authorization": authHeader},
+            content: content==null ? null : JSON.stringify(content) 
+        }).then((response) => {
+            try{
+
+                if(response.statusCode < 400)
                 {
-                    "text": "Small Coffee",
-                    "command": "brew small coffee"
-                },
-                {
-                    "text": "Large Coffee",
-                    "command": "brew large coffee"
+                    console.log("Result of " + method + " " + url + ":" + response.statusCode)
+
+
+                    const result = response.content.toJSON();
+
+                    console.log(JSON.stringify(result));
+                    resolve(result);
                 }
-            ],
-
-            loac:{
-                resourceName: "fedorspi",
-                tokens: [token],
-                certificates: []
-            }
-        },
-        {
-            name: "Gian-Lucas's Raspberry",
-            description: "Von Gian-Luca",
-            imageUrl: "https://proxy.duckduckgo.com/iu/?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F9%2F97%2FRaspberry_Pi_3_B%252B_%252839906369025%2529.png%2F1200px-Raspberry_Pi_3_B%252B_%252839906369025%2529.png&f=1",
-            
-            delegatedBy: null,
-
-            buttons: [
+                else
                 {
-                    "btnTxt": "Brew Coffee",
-                    "command": "brew"
+                    resolve(false);
                 }
-            ],
 
-            loac:{
-                resourceName: "gianlucaspi",
-                tokens: [pa.issueToken(mockUsername, true, "gianlucaspi", now-1000, now+1000)],
-                certificates: []
+            }catch(err)
+            {
+                logUncatched(err);
             }
-        }
-    ]
+            
+        }, (e) => {
+            logUncatched(e);
+            reject(e);
+        });
 
-    await resolveAfter(500);
+    });
+}
 
-    return devices;
+export async function loadDevices(username, password) {
+
+    var result = await request('GET', '/permissions', null, username, password);
+    return result;
 };
 
-export async function sendLogin(req, username, password){
+export async function sendLogin(req, username, password) {
 
-    try
-    {
-        console.log("Start mock login api");
-        console.log("Mock PA public: " + pa.pk);
-        console.log("Mock IA public: " + ia.pk);
-
-        if(password != 'pass')
-            return false
-
-        mockUsername = username;
-
-        var cert = ia.handleOnboaradingRequest(req, username);
-
-        console.log("Certificate generated");
-        return cert;
-    }
-    catch(err) {
-        console.log("Error in login:");
-        console.log(err.message);
-        return false;
-    }
-    
+    var result = await request('POST', '/login', req, username, password);
+    return result;
 }

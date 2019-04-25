@@ -11,4 +11,5 @@ export function copyObject(obj){
 
 export function logUncatched(err){
     console.log("Uncatched error: " + err.message);
+    throw err;
 }

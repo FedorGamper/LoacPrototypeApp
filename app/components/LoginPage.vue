@@ -33,7 +33,7 @@ export default {
     data() {
         return {
             username: "Batman",
-            password: "pass",
+            password: "password",
             busy: false,
             isFailed: false
         };
