@@ -3,7 +3,7 @@ import { loac } from './loacBinding';
 import { resolve } from 'url';
 import { logUncatched } from './utils';
 
-const baseUrl = 'http://192.168.1.151:5000/api';
+const baseUrl = 'https://loacprotocol.appspot.com/api';
 const httpModule = require("http");
 
 async function request(method, endpoint, content, username, password)
