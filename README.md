@@ -27,5 +27,5 @@ app/
 ├── controllers/                       In this folder is all code which has nothing to
 │                                      with the user interface
 │
-├── fonts/                             Folder for special fonts 
+└── fonts/                             Folder for special fonts 
 ```
