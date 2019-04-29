@@ -1,13 +1,13 @@
 # LoacPrototypeApp
 Prototype, NativeScript
 
-This is the repository for the mobile application of the prototype. The app is a NativeScript Vue application.
+This is the repository for the mobile application of the prototype. The app is a [NativeScript Vue](https://nativescript-vue.org/) application.
 
-# Preview
+## Preview
 To preview the app install the NativeScript Playground app and run
 `tns preview --bundle`
 
-# Code Structure
+## Code Structure
 
 ```
 app/
