@@ -35,7 +35,7 @@
     </Page>
 </template>
 <script>
-import {searchAndConnect, access, disconnectDevice} from '../controllers/AccessController';
+import {searchAndConnect, access, disconnectDevice, debugAccessRequest} from '../controllers/AccessController';
 import DelegatePageVue from './DelegatePage.vue';
 
 
@@ -55,6 +55,8 @@ export default {
 
         console.log("Device detail component mounted: " + this.device.name);
         await this.search();
+
+        await debugAccessRequest(this.device, "foobar");
         
     },
     async destroyed(){

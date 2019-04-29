@@ -1,6 +1,3 @@
-import { resolveAfter } from './prototypeUtils';
-import { loac } from './loacBinding';
-import { resolve } from 'url';
 import { logUncatched } from './utils';
 
 const baseUrl = 'https://loacprotocol.appspot.com/api';
@@ -26,8 +23,8 @@ async function request(method, endpoint, content, username, password)
 
                 if(response.statusCode < 400)
                 {
-                    console.log("Result of " + method + " " + url + ":" + response.statusCode)
-
+                    console.log("Result of " + method + " " + url + ":" + response.statusCode);
+                    console.log("Response Content: " + response.content.toString());
 
                     const result = response.content.toJSON();
 

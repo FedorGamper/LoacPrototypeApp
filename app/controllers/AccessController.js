@@ -100,27 +100,57 @@ export async function disconnectDevice(uuid) {
 
 }
 
+function createAccessRequestMessage(device, command)
+{
+    const secret = appSettings.getString("secret");
+    const certificate = appSettings.getString("certificate");
+
+    console.log("Secret: " + secret);
+    
+    var subject = new loac.Subject(secret);
+
+    const certificates = device.loac.certificates.concat(certificate);
+    const tokens = device.loac.tokens;
+    var accessRequest = subject.createAccessRequest(device.loac.resourceName, command, tokens, certificates);
+    console.log("Created access request: "+ JSON.stringify(accessRequest));
+
+    var message = accessRequest.serialize();
+    console.log("Message: len= " + message.length + " : " + message.toString('hex'));
+
+    return message;
+}
+
+
+export async function debugAccessRequest(device, command)
+{    
+    try{
+
+        const message = createAccessRequestMessage(device, command);
+
+        // DEBUG
+        var resource = new loac.Resource(
+            'fedorspi',
+            ["494c131df69b29b9a1aff65ea9958ac1ed1d7281d48aab0b"],
+            ["1fb1b56b26131b191457273ff9566ee7d87c167365c7d961"],
+            10);
+
+        resource.checkAccessRequest(message, ()=>{});
+        console.log("valid request all ok");
+    }
+    catch(err)
+    {
+        console.log("The access request is invalid!!! " + JSON.stringify(err));
+    }
+    
+}
+
 export async function access(device, deviceUuid, command) {
 
     return new Promise(resolve => {
 
         try {
 
-            const secret = appSettings.getString("secret");
-            const certificate = appSettings.getString("certificate");
-
-            console.log("Secret: " + secret);
-            
-            var subject = new loac.Subject(secret);
-
-            const certificates = device.loac.certificates.concat(certificate);
-            const tokens = device.loac.tokens;
-            var accessRequest = subject.createAccessRequest(device.loac.resourceName, command, tokens, certificates);
-
-            console.log("Created access request: "+ JSON.stringify(accessRequest));
-
-            var message = accessRequest.serialize();
-            console.log("Message: len= " + message.length + " : " + message.toString('hex'));
+            const message = createAccessRequestMessage(device, command);
 
             sendDataToDevice(
                 deviceUuid,

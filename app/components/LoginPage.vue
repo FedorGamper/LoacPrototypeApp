@@ -16,9 +16,7 @@
             <ActivityIndicator :busy="busy"></ActivityIndicator>
 
             <Button text="Log In" class="mainBtn" @tap="onLogInTap"></Button>
-            <Label class="noAccountText" text="Don’t have an account?" horizontalAlignment="center"/>
-            
-            <label class="error" v-if="isFailed" text="Login Error" />
+            <label class="error" v-if="isFailed" text="Login Error" horizontalAlignment="center"/>
 
         </StackLayout>
     </Page>
@@ -32,7 +30,7 @@ import {login, isLogedIn} from '../controllers/LoginController';
 export default {
     data() {
         return {
-            username: "Batman",
+            username: "batman",
             password: "password",
             busy: false,
             isFailed: false
@@ -89,7 +87,7 @@ Button{
     margin-top: 60px;
 }
 
-.noAccountText{
+.error{
     margin: 10px;
     color: $blue-50;
 }
