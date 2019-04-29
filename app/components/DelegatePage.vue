@@ -2,7 +2,6 @@
     <Page class="page">
 
         <ActionBar title="Delegation">
-            
         </ActionBar>
 
         <StackLayout>
@@ -27,6 +26,7 @@
                 </Label>
                 <TextView editable="false" v-model="encodedDevice" />
             </StackLayout>
+
         </StackLayout>
 
     </Page>

@@ -1,14 +1,12 @@
 import Vue from "nativescript-vue";
-
 import LoginPage from "./components/LoginPage";
 
-Vue.config.silent = true;
+Vue.config.silent = false;
 
 Vue.registerElement(
     'PullToRefresh',
     () => require('nativescript-pulltorefresh').PullToRefresh
 );
-
 
 new Vue({
 

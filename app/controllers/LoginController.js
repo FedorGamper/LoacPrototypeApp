@@ -1,54 +1,69 @@
-import {loac} from '../loacBinding';
-import {sendLogin, loadDevices} from '../apiBindings';
+import {loac} from '../loacSingleton';
+import {sendLogin, loadDevices} from './ApiController';
+import { logUncatched } from '../utils';
+
+/**
+ * This module contains all functions concerning the
+ * login functionality of the app.
+ */
+
 
 const appSettings = require("application-settings");
 
-
-let subject = null;
-let certificate = null;
-
-export function getSubject(){
-
-    return subject;
-};
-
-export function getCertificate(){
-   return certificate;
-}
-
+/**
+ * Returns the if the user is has stored all needed settings in the app
+ */
 export async function isLogedIn(){
  
     return appSettings.hasKey("secret") && appSettings.hasKey("certificate") && appSettings.hasKey("username");
 }
 
+/**
+ * Performs a login:
+ * 1) Creates the secret key and signs a singing request
+ * 2) Sends the signing request to the server
+ * 3) If ok: Stores the received certificate, otherwise returns that the login is invalid.
+ * @param {String} username 
+ * @param {String} password 
+ */
 export async function login(username, password){
 
-    console.log("Login username=" + username);
+    try{
+        console.log("Login username=" + username);
 
-    let subject = new loac.Subject();
+        let subject = new loac.Subject();
 
-    let req = subject.generateOnboardingRequest(username);
+        let req = subject.generateOnboardingRequest(username);
 
-    console.log("Signing request generated");
+        console.log("Signing request generated");
 
-    certificate = await sendLogin(req, username, password)
+        let certificate = await sendLogin(req, username, password)
 
-    if(certificate)
-    {
-        console.log("Certificate: " + certificate);
-        console.log("Secret: " + subject.sk);
+        if(certificate)
+        {
+            console.log("Certificate: " + certificate);
+            console.log("Secret: " + subject.sk);
 
-        appSettings.setString("secret", subject.sk);
-        appSettings.setString("certificate", certificate);
-        appSettings.setString("username", username);
-        appSettings.setString("password", password);
+            appSettings.setString("secret", subject.sk);
+            appSettings.setString("certificate", certificate);
+            appSettings.setString("username", username);
+            appSettings.setString("password", password);
 
-        return true;
+            return true;
+        }
+
+        return false;
     }
-
-    return false;
+    catch(err)
+    {
+        logUncatched(err);
+        return false;
+    }
 }
 
+/**
+ * Loads the deviceObjects from the server
+ */
 export async function loadDevicesFromServer(){
 
     var username = appSettings.getString('username');
@@ -62,6 +77,9 @@ export async function loadDevicesFromServer(){
     return result;
 }
 
+/**
+ * Deletes all certificates, secrets and passwords.
+ */
 export async function logout(){
 
     appSettings.clear();

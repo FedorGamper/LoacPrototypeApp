@@ -28,8 +28,7 @@
                 </StackLayout>
 
             </StackLayout>
-            
-                    
+              
         </StackLayout>
 
     </Page>
@@ -54,8 +53,8 @@ export default {
     async mounted(){
 
         console.log("Device detail component mounted: " + this.device.name);
+        
         await this.search();
-
         await debugAccessRequest(this.device, "foobar");
         
     },
@@ -75,7 +74,7 @@ export default {
             let result = await searchAndConnect(this.device);
 
             this.isSearching = false;
-            console.log(result);
+
             if(result.success)
             {
                 this.isConnected = true;
@@ -108,7 +107,6 @@ export default {
             }
 
             this.$navigateTo(DelegatePageVue, options);
-
         }
     }
 };

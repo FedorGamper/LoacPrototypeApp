@@ -1,8 +1,20 @@
-import { logUncatched } from './utils';
+import { logUncatched } from '../utils';
+
+/**
+ * This module is responsible for making the HTTPS Requests to the remote api
+ */
 
 const baseUrl = 'https://loacprotocol.appspot.com/api';
 const httpModule = require("http");
 
+/**
+ * Performs a http(s) request and deserialize the answer.
+ * @param {String} method 'GET' or 'POST'
+ * @param {String} endpoint The endpoint with leading slash. Example: '/login'
+ * @param {String} content The payload of the request as object or null
+ * @param {String} username The username
+ * @param {String} password The password
+ */
 async function request(method, endpoint, content, username, password)
 {
     return new Promise((resolve, reject)=>{
@@ -10,6 +22,7 @@ async function request(method, endpoint, content, username, password)
         var url = baseUrl + endpoint;
         console.log(method + ": " + url);
 
+        // HTTP basic auth header
         var authHeader = "Basic " + btoa(username + ":" + password)
 
         httpModule.request({
@@ -49,12 +62,23 @@ async function request(method, endpoint, content, username, password)
     });
 }
 
+/**
+ * Loads all deviceObjects from the server
+ * @param {String} username 
+ * @param {String} password 
+ */
 export async function loadDevices(username, password) {
 
     var result = await request('GET', '/permissions', null, username, password);
     return result;
 };
 
+/**
+ * The login/certificate singing endpoint
+ * @param {CertificateSingingRequest} req The singing request 
+ * @param {*} username
+ * @param {*} password 
+ */
 export async function sendLogin(req, username, password) {
 
     var result = await request('POST', '/login', req, username, password);

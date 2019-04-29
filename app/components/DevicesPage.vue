@@ -43,7 +43,7 @@
     </Page>
 </template>
 <script>
-import {loadDevices} from '../apiBindings';
+import {loadDevices} from '../controllers/ApiController';
 import DeviceDetailPage from './DeviceDetailPage'
 import { logout, loadDevicesFromServer } from '~/controllers/LoginController';
 import LoginPage from './LoginPage';
@@ -181,5 +181,4 @@ ListView{
     margin: 10px;
 
 }
-
 </style>

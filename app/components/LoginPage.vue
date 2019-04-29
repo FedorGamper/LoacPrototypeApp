@@ -61,6 +61,7 @@ export default {
             let success = await login(this.username, this.password);
             this.busy = false;
 
+            console.log("Sucess: " + success);
 
             if(success)
             {    
